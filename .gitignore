@@ -565,5 +565,6 @@ docusaurus/website/build
 !.yarn/sdks
 !.yarn/versions
 
-#registry
-verdaccio
+!spenttime-*.zip
+
+*.vsix

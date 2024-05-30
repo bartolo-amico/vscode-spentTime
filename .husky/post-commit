@@ -33,7 +33,7 @@ notifyCommit() {
   username="Git Notifier"
   color=3066993
   content="Commit effettuato da ${array[0]} su ${currentBranch}\nData: ${array[2]}\nMessaggio: ${array[3]}"
-  sendcontent='{"username": "'"$username"'", "content": "'"$content"'", "embeds": [{"title": "SHA","url": "'"https://bitbucket.nexicloud.it/projects/${project[4]}/repos/${proj}/commits/${array[1]}"'","description": "'"${array[1]}"'" ,"color": "'"$color"'"}]}'
+  sendcontent='{"username": "'"$username"'", "content": "'"$content"'", "embeds": [{"title": "SHA","url": "'"https://github.com/bartolo-amico/vscode-spentTime/commit/${array[1]}"'","description": "'"${array[1]}"'" ,"color": "'"$color"'"}]}'
 
   curl -H "Content-Type: application/json" -d "$sendcontent" "$hook"
 }
@@ -51,7 +51,7 @@ while IFS= read -r stash; do
     stashName=${stash%%:*}
 
     # Drop the stash
-    #git stash drop "$stashName"
+    git stash drop "$stashName"
 
     # Break the loop after dropping the first "WIP" stash
     break
@@ -59,8 +59,8 @@ while IFS= read -r stash; do
 done <<< "$stashes"
 
 echo -e "${GREEN}Retrieve all changes\n"
-#git pull
-#git push origin $currentBranch
-#notifyCommit
+git pull
+git push origin $currentBranch
+notifyCommit
 sleep 3
 git rev-parse HEAD > .shacommit

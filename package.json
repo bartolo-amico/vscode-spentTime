@@ -37,6 +37,12 @@
     "nexi digital",
     "javascript"
   ],
+  "contributors": [
+    {
+      "name": "Bartolomeo Amico",
+      "email": "b.amico@nexidigital.eu"
+    }
+  ],
   "main": "./extension.js",
   "activationEvents": [
     "*"
@@ -46,6 +52,13 @@
       {
         "command": "spentTime.openBox",
         "title": "Open SpentTime Box"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "spentTime.openBox",
+        "key": "ctrl+shift+t",
+        "mac": "cmd+shift+t"
       }
     ]
   },

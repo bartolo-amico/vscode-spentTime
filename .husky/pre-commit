@@ -63,10 +63,10 @@ if [[ "$stagedFiles" == "" ]]; then
 fi
 
 #Stashing files to prevent work losing
-#git stash -u -m "save WIP $(date)"
+git stash -u -m "save WIP $(date)"
 echo -e "${YELLOW}Stashing files 🗃️🗃️🗃️ \n"
-#git stash apply stash@{0}
-#git add $stagedFiles
+git stash apply stash@{0}
+git add $stagedFiles
 
 if [ ${#eslintFiles} -lt 1 ]; then
   echo -e "${BLUE}You have no staged files to lint check\n"

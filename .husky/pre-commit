@@ -1,0 +1,87 @@
+#!/bin/bash
+
+# Copyright (c) 2019-present, NEXI Digital.
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+# Git Hook for Commitlint
+# Runs at every commit and lint the message.
+
+
+RED='\e[0;31m'
+GREEN='\e[0;32m'
+YELLOW='\e[0;33m'
+BLUE='\e[0;34m'
+PURPLE='\e[0;35m'
+CYAN='\e[0;36m'
+WHITE='\e[0;37m'
+COMMIT_MSG_FILE=$1
+COMMIT_SOURCE=$2
+SHA1=$3
+
+clear
+touch .shacommit
+git rev-parse HEAD > .shacommit
+
+if [ "${COMMIT_SOURCE}" = merge ];then
+    exit 0
+fi
+
+echo -e "${GREEN}You are about to commit 🏗️🏗️🏗️ " $(git diff --cached --shortstat)
+echo -e "${GREEN}to" $(git branch --show-current)
+
+binPath="$(git rev-parse --show-toplevel)/node_modules/.bin"
+stagedFiles=$(git diff --cached --name-only --diff-filter=ACMDR)
+eslintFiles=$(git diff --cached --name-only --diff-filter=ACM | grep -E '.(jsx|js)$')
+pass=true
+
+eslint(){
+  ## Executing validation
+  echo -e "${BLUE}Starting ESLint validation 🔨🔨🔨\n"
+
+  npx eslint --format=codeframe --quiet --fix ${eslintFiles[*]} "$@"
+
+  if [[ $? == 0 ]]; then
+    echo -e "${GREEN}Lint Passed ✔️\n"
+  else
+    echo -e "${RED}Lint Failed ❌ \n"
+    pass=false
+  fi
+
+  echo -e "${YELLOW}\nESLint Validation completed! 👍👍👍 \n"
+}
+
+prettier() {
+  echo -e "${YELLOW}Prettify your staged files 🖌️🖌️🖌️\n"
+  yarn prettier ${eslintFiles[*]} "$@" --write
+  git add $stagedFiles
+}
+
+if [[ "$stagedFiles" == "" ]]; then
+  echo -e "${YELLOW}No staging files"
+  exit 0
+fi
+
+#Stashing files to prevent work losing
+#git stash -u -m "save WIP $(date)"
+echo -e "${YELLOW}Stashing files 🗃️🗃️🗃️ \n"
+#git stash apply stash@{0}
+#git add $stagedFiles
+
+if [ ${#eslintFiles} -lt 1 ]; then
+  echo -e "${BLUE}You have no staged files to lint check\n"
+else
+  eslint
+fi
+
+if ! $pass; then
+  echo -e "${RED}COMMMIT FAILED: Your commit contains files that should pass validation tests, but don't.. Please fix the errors and try again. 😠😠\n"
+  exit 1
+else
+  echo -e "${GREEN}VALIDATION SUCCESS 🎉🎉🔥🔥\n"
+  if [ ${#eslintFiles} -gt 1 ]; then
+    prettier
+  fi
+fi
+
+exit $?

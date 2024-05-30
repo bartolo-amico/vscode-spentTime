@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# Copyright (c) 2019-present, NEXI Digital.
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+# Git Hook for PostCommit
+# Runs at every commit and pull every other commits.
+
+RED='\e[0;31m'
+GREEN='\e[0;32m'
+YELLOW='\e[0;33m'
+BLUE='\e[0;34m'
+PURPLE='\e[0;35m'
+CYAN='\e[0;36m'
+WHITE='\e[0;37m'
+hook='https://discord.com/api/webhooks/1206926787553271829/eZD1nlmn-PVIxrAe5XC6OE9fPAL-EaAPYCda8PUWWxCRfJ5RwbKEUHv-7hPnmS5cAGgN'
+
+
+# Parse commit info
+commit="$(git log -n 1 --pretty=format:"%an,%H,%ad,%s")"
+IFS=',' read -ra array <<< "$commit"
+
+# Parse repo info
+repouri="$(git ls-remote --get-url)"
+IFS='/' read -ra project <<< "$repouri"
+proj="$(cut -d . -f 1 <<< ${project[5]})"
+
+# Get current branch
+currentBranch=$(git branch --show-current)
+
+notifyCommit() {
+  username="Git Notifier"
+  color=3066993
+  content="Commit effettuato da ${array[0]} su ${currentBranch}\nData: ${array[2]}\nMessaggio: ${array[3]}"
+  sendcontent='{"username": "'"$username"'", "content": "'"$content"'", "embeds": [{"title": "SHA","url": "'"https://github.com/bartolo-amico/vscode-spentTime/commit/${array[1]}"'","description": "'"${array[1]}"'" ,"color": "'"$color"'"}]}'
+
+  curl -H "Content-Type: application/json" -d "$sendcontent" "$hook"
+}
+
+echo -e "${GREEN}Commit Successful\n"
+echo -e "${GREEN}Remove last saved stash\n"
+# Get the list of stashes
+stashes=$(git stash list)
+
+# Loop through each stash
+while IFS= read -r stash; do
+  # Check if the stash message starts with "WIP"
+  if [[ $stash == *"WIP"* ]]; then
+    # Get the stash name (the part before the colon)
+    stashName=${stash%%:*}
+
+    # Drop the stash
+    git stash drop "$stashName"
+
+    # Break the loop after dropping the first "WIP" stash
+    break
+  fi
+done <<< "$stashes"
+
+echo -e "${GREEN}Retrieve all changes\n"
+git pull
+git push origin $currentBranch
+notifyCommit
+sleep 3
+git rev-parse HEAD > .shacommit

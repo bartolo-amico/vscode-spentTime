@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Copyright (c) 2019-present, NEXI Digital.
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+# Git Hook for Commitlint
+# Runs at every commit and checks for an error.
+
+BLUE='\e[0;34m'
+
+echo -e "${BLUE}Commit all files"
+COMMIT_MSG_FILE=$1
+COMMIT_SOURCE=$2
+SHA1=$3
+
+if [ "${COMMIT_SOURCE}" = merge ];then
+    exit 0
+else
+  npx --no-install commitlint --edit "$1"
+fi

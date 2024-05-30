@@ -1,0 +1,73 @@
+{
+  "name": "spenttime",
+  "displayName": "SpentTime",
+  "description": "Ask to a developer to insert the work time task, and register in on cloud",
+  "icon": "spent.png",
+  "version": "1.0.0",
+  "publisher": "Bartolomeo Amico",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.89.0"
+  },
+  "galleryBanner": {
+    "color": "#C80000",
+    "theme": "dark"
+  },
+  "author": {
+    "name": "Bartolomeo Amico",
+    "email": "b.amico@nexidigital.eu",
+    "url": "https://github.com/bartolo-amico"
+  },
+  "bugs": {
+    "url": "https://github.com/bartolo-amico/vscode-spentTime/issues",
+    "email": "b.amico@nexidigital.eu"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bartolo-amico/vscode-spentTime.git"
+  },
+  "homepage": "https://github.com/bartolo-amico/vscode-spentTime/main/README.md",
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "git",
+    "time",
+    "task",
+    "nexi digital",
+    "javascript"
+  ],
+  "main": "./extension.js",
+  "activationEvents": [
+    "*"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "spentTime.openBox",
+        "title": "Open SpentTime Box"
+      }
+    ]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "prepare": "husky install"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@commitlint/cli": "^19.3.0",
+    "@commitlint/config-conventional": "^19.2.2",
+    "@commitlint/cz-commitlint": "^19.2.0",
+    "@types/vscode": "^1.89.0",
+    "@vscode/test-cli": "^0.0.9",
+    "@vscode/test-electron": "^2.3.9",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-formatter-codeframe": "^7.32.1",
+    "eslint-plugin-prettier": "^5.1.3",
+    "husky": "8.0.1",
+    "prettier": "^3.2.5",
+    "rollup": "^4.17.2",
+    "vscode": "^1.1.37"
+  }
+}

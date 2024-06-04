@@ -12,7 +12,7 @@ install from VSIX.
 
 ## How to
 
-Open the extension menu, and select `Open SpentTime Box`.
+Open the extension menu, and select `Open SpentTime Box` or use rhe shortcut `ALT+CTRL+SHIFT+T`.
 An input box is showed to you, that ask to insert the time spent in hour and another input ask you to
 insert the jira task.
 
@@ -24,9 +24,7 @@ Enjoy!
 
 ## Release Notes
 
-### 1.0.0
-
-Initial release.
+You can view all the changelog release on the [CHANGELOG](CHANGELOG.md) file.
 
 ## License
 

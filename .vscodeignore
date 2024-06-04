@@ -10,3 +10,10 @@ vsc-extension-quickstart.md
 **/.vscode-test.*
 out/**
 .husky
+extv1.js
+rollup.config.js
+.github/**
+commitlint.config.js
+node_modules/**
+.prettierignore
+.shacommit

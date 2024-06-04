@@ -8,7 +8,7 @@ timeSpent
 const projectPath = vscode.workspace.workspaceFolders[0].uri.path
 
 module.exports = {
-	activate,
+	activate
 }
 
 const execShell = cmd =>
@@ -41,15 +41,17 @@ const addTime = async () => {
 }
 
 const addSpentTime = async (commitId, author, commitTimestamp, commitMessage, repoBranch, repoUrl) => {
-	const branch = repoBranch.split('>')[1].trim()
+const branch = repoBranch.trim()
 	await addTime()
 	if (isNaN(timeSpent) || timeSpent <= 0) {
 		vscode.window.showErrorMessage('Invalid input. Please enter a positive number.')
+		if(value === undefined) { return}
 		addSpentTime(commitId, author, commitTimestamp, commitMessage, repoBranch, repoUrl)
 	} else {
 		await addJiraTask()
 		if(/\w+-\d+/g.test(task) === false) {
 			vscode.window.showErrorMessage('Invalid input. Please enter a valid task. ie (JIRA-000)')
+			if(task === undefined) { return}
 			addSpentTime(commitId, author, commitTimestamp, commitMessage, repoBranch, repoUrl)
 		} else {
  			try {
@@ -76,8 +78,9 @@ const addSpentTime = async (commitId, author, commitTimestamp, commitMessage, re
 
 function activate(context) {
 	let disposable = vscode.commands.registerCommand('spentTime.openBox', async () => {
-		const output = await execShell(`cd ${projectPath} && git log -1 --pretty=format:"%H,%an,%cd,%s,%D"`)
-		let [commitId, author, commitTimestamp, commitMessage, repoBranch] = output.split(',')
+		const repoBranch = await execShell(`cd ${projectPath} && git branch --show-current`)
+		const output = await execShell(`cd ${projectPath} && git log -1 --pretty=format:"%H,%an,%cd,%s"`)
+		let [commitId, author, commitTimestamp, commitMessage] = output.split(',')
 		let repoUrl = await execShell(`cd ${projectPath} && git config --get remote.origin.url`)
 		addSpentTime(commitId, author, commitTimestamp, commitMessage, repoBranch, repoUrl)
 	})

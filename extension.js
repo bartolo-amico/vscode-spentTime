@@ -1,9 +1,7 @@
 const vscode = require('vscode')
 const exec = require('child_process').exec
 
-let task,
-value,
-timeSpent
+let task, value, timeSpent
 
 const projectPath = vscode.workspace.workspaceFolders[0].uri.path
 
@@ -41,19 +39,25 @@ const addTime = async () => {
 }
 
 const addSpentTime = async (commitId, author, commitTimestamp, commitMessage, repoBranch, repoUrl) => {
-	const branch = repoBranch.split('>')[1].trim()
+	const branch = repoBranch.trim()
 	await addTime()
 	if (isNaN(timeSpent) || timeSpent <= 0) {
 		vscode.window.showErrorMessage('Invalid input. Please enter a positive number.')
+		if (value === undefined) {
+			return
+		}
 		addSpentTime(commitId, author, commitTimestamp, commitMessage, repoBranch, repoUrl)
 	} else {
 		await addJiraTask()
-		if(/\w+-\d+/g.test(task) === false) {
+		if (/\w+-\d+/g.test(task) === false) {
 			vscode.window.showErrorMessage('Invalid input. Please enter a valid task. ie (JIRA-000)')
+			if (task === undefined) {
+				return
+			}
 			addSpentTime(commitId, author, commitTimestamp, commitMessage, repoBranch, repoUrl)
 		} else {
- 			try {
-	 			await execShell(`curl --location 'https://prod-13.westeurope.logic.azure.com/workflows/15ffb8208ba64e39910e5e363b6971b7/triggers/manual/paths/invoke/track?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=YW2B2i2RRO3tAt3VARU6kFOoNCi8uj0bnIFaZzMOU0o' \
+			try {
+				await execShell(`curl --location 'https://prod-13.westeurope.logic.azure.com/workflows/15ffb8208ba64e39910e5e363b6971b7/triggers/manual/paths/invoke/track?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=YW2B2i2RRO3tAt3VARU6kFOoNCi8uj0bnIFaZzMOU0o' \
 				--header 'Content-Type: application/json' \
 				--data '{
 						"commit-id": "${commitId}",
@@ -76,8 +80,9 @@ const addSpentTime = async (commitId, author, commitTimestamp, commitMessage, re
 
 function activate(context) {
 	let disposable = vscode.commands.registerCommand('spentTime.openBox', async () => {
-		const output = await execShell(`cd ${projectPath} && git log -1 --pretty=format:"%H,%an,%cd,%s,%D"`)
-		let [commitId, author, commitTimestamp, commitMessage, repoBranch] = output.split(',')
+		const repoBranch = await execShell(`cd ${projectPath} && git branch --show-current`)
+		const output = await execShell(`cd ${projectPath} && git log -1 --pretty=format:"%H,%an,%cd,%s"`)
+		let [commitId, author, commitTimestamp, commitMessage] = output.split(',')
 		let repoUrl = await execShell(`cd ${projectPath} && git config --get remote.origin.url`)
 		addSpentTime(commitId, author, commitTimestamp, commitMessage, repoBranch, repoUrl)
 	})

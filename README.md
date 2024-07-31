@@ -1,4 +1,4 @@
-# SpentTime [![License](https://img.shields.io/badge/License-MIT-yellowgreen.svg)](https://github.com/bartolo-amico/vscode-spentTime/blob/main/LICENSE.md) ![GitHub package.json version](https://img.shields.io/github/package-json/v/bartolo-amico/vscode-spentTime) [![author](https://img.shields.io/badge/author-nexi%20digital-blue)](https://github.com/bartolo-amico)
+# SpentTime [![License](https://img.shields.io/badge/License-MIT-yellowgreen.svg)](https://github.com/bartolo-amico/vscode-spentTime/blob/main/LICENSE.md) ![GitHub Tag](https://img.shields.io/github/v/tag/bartolo-amico/vscode-spentTime) [![author](https://img.shields.io/badge/author-nexi%20digital-blue)](https://github.com/bartolo-amico)
 
 This extension intends to give you a way to track the amount of time you spend in your projects.
 

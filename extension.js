@@ -6,7 +6,6 @@ const axios = require('axios')
 let task, value, timeSpent
 
 const projectPath = vscode.workspace.workspaceFolders[0].uri.path
-
 module.exports = {
 	activate,
 }
@@ -115,6 +114,12 @@ function activate(context) {
 		const output = await execShell(`cd ${projectPath} && git log -1 --pretty=format:"%H,%an,%cd,%s"`)
 		let [commitId, author, commitTimestamp, commitMessage] = output.split(',')
 		let repoUrl = await execShell(`cd ${projectPath} && git config --get remote.origin.url`)
+		// Check and remove username from repoUrl
+		const regex = /https:\/\/[^@]+@/
+		if (regex.test(repoUrl)) {
+			repoUrl = repoUrl.replace(/https:\/\/[^@]+@/, 'https://')
+		}
+
 		addSpentTime(commitId, author, commitTimestamp, commitMessage, repoBranch, repoUrl)
 	})
 	context.subscriptions.push(disposable)

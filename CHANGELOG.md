@@ -4,6 +4,11 @@ All notable changes to the "worktime" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.0.4]
+
+- Add check for hours input
+- Add trim on repo url
+
 ## [1.0.3]
 
 - Add method to sanitize repourl

@@ -1,14 +1,11 @@
 const vscode = require('vscode')
 const exec = require('child_process').exec
 const os = require('os')
-const axios = require('axios')
+const axios = require('axios');
 
 let task, value, timeSpent
 
 const projectPath = vscode.workspace.workspaceFolders[0].uri.path
-module.exports = {
-	activate,
-}
 
 const execShell = cmd =>
 	new Promise(resolve => {
@@ -36,7 +33,12 @@ const addJiraTask = async () => {
 const addTime = async () => {
 	if (!isNaN(timeSpent) || timeSpent > 0) return
 	value = await vscode.window.showInputBox({ prompt: 'Enter the time spent on the task in hours' })
-	timeSpent = parseFloat(value)
+	const integerRegex = /^\d+$/
+	if (!integerRegex.test(value)) {
+		vscode.window.showErrorMessage('Invalid input. Please enter a whole number without decimals.')
+		return
+	}
+	timeSpent = parseInt(value, 10)
 }
 
 const addSpentTime = async (commitId, author, commitTimestamp, commitMessage, repoBranch, repoUrl) => {
@@ -72,7 +74,7 @@ const addSpentTime = async (commitId, author, commitTimestamp, commitMessage, re
 								"commit-message": "${commitMessage}",
 								"repo-branch": "${branch}"
 						}'`)
-				} else {
+ 				} else {
 					await axios.post(
 						'https://prod-13.westeurope.logic.azure.com/workflows/15ffb8208ba64e39910e5e363b6971b7/triggers/manual/paths/invoke/track',
 						{
@@ -120,7 +122,14 @@ function activate(context) {
 			repoUrl = repoUrl.replace(/https:\/\/[^@]+@/, 'https://')
 		}
 
-		addSpentTime(commitId, author, commitTimestamp, commitMessage, repoBranch, repoUrl)
+		addSpentTime(commitId, author, commitTimestamp, commitMessage, repoBranch, repoUrl.trim())
 	})
 	context.subscriptions.push(disposable)
+}
+
+function deactivate() {}
+
+module.exports = {
+	activate,
+	deactivate
 }

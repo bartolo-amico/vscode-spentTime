@@ -11,9 +11,9 @@ vsc-extension-quickstart.md
 out/**
 .husky
 extv1.js
+ext_beta.js
 rollup.config.js
 .github/**
 commitlint.config.js
-node_modules/**
 .prettierignore
 .shacommit

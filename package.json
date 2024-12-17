@@ -3,7 +3,7 @@
   "displayName": "SpentTime",
   "description": "Ask to a developer to insert the work time task, and register in on cloud",
   "icon": "spent.png",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "publisher": "Bartolomeo Amico",
   "license": "MIT",
   "engines": {
@@ -68,7 +68,9 @@
     "package": "vsce package --yarn",
     "prepare": "husky install"
   },
-  "dependencies": {},
+  "dependencies": {
+    "axios": "^1.7.9"
+  },
   "devDependencies": {
     "@babel/core": "^7.24.6",
     "@babel/preset-env": "^7.24.6",
@@ -81,7 +83,6 @@
     "@types/vscode": "^1.89.0",
     "@vscode/test-cli": "^0.0.9",
     "@vscode/test-electron": "^2.3.9",
-    "axios": "^1.7.2",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-formatter-codeframe": "^7.32.1",

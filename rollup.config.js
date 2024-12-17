@@ -29,17 +29,20 @@ module.exports = {
 		},
 	],
 	plugins: [
+		peerDepsExternal(),
 		resolve({
 			jsnext: true,
 			main: true,
 			browser: true,
+			preferBuiltins: false,
+			extensions: ['.js', '.jsx'],
 		}),
 		commonjs({ include: /node_modules/ }),
 		babel({
 			babelHelpers: 'bundled',
 			exclude: 'node_modules/**', // only transpile our source code
 			presets: ['@babel/preset-env'],
+			extensions: ['.js'],
 		}),
-		peerDepsExternal(),
 	],
 }

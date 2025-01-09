@@ -1,31 +1,16 @@
 const vscode = require('vscode')
-const exec = require('child_process').exec
+const util = require('util')
+const exec = util.promisify(require('child_process').exec)
 const os = require('os')
-const axios = require('axios');
+const axios = require('axios')
+const OS = os.platform()
 
 let task, value, timeSpent
 
-const projectPath = vscode.workspace.workspaceFolders[0].uri.path
-
-const execShell = cmd =>
-	new Promise(resolve => {
-		exec(cmd, (err, out) => {
-			if (err) {
-				return resolve(err + ' error!')
-			}
-			return resolve(out)
-		})
-	})
-
-let fsWait = false
-
-function debounceFsWatch() {
-	if (fsWait) return true
-	setTimeout(() => {
-		fsWait = false
-	}, 300)
+let projectPath = vscode.workspace.workspaceFolders[0].uri.path
+if (OS === 'win32') {
+	projectPath = projectPath.replace(/\\/g, '\\\\')
 }
-
 const addJiraTask = async () => {
 	task = await vscode.window.showInputBox({ prompt: 'Enter the jira task you have completed' })
 }
@@ -60,9 +45,8 @@ const addSpentTime = async (commitId, author, commitTimestamp, commitMessage, re
 			addSpentTime(commitId, author, commitTimestamp, commitMessage, repoBranch, repoUrl)
 		} else {
 			try {
-				const OS = os.platform()
 				if (OS !== `win32`) {
-					await execShell(`curl --location 'https://prod-13.westeurope.logic.azure.com/workflows/15ffb8208ba64e39910e5e363b6971b7/triggers/manual/paths/invoke/track?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=YW2B2i2RRO3tAt3VARU6kFOoNCi8uj0bnIFaZzMOU0o' \
+					await exec(`curl --location 'https://prod-13.westeurope.logic.azure.com/workflows/15ffb8208ba64e39910e5e363b6971b7/triggers/manual/paths/invoke/track?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=YW2B2i2RRO3tAt3VARU6kFOoNCi8uj0bnIFaZzMOU0o' \
 						--header 'Content-Type: application/json' \
 						--data '{
 								"commit-id": "${commitId}",
@@ -74,7 +58,7 @@ const addSpentTime = async (commitId, author, commitTimestamp, commitMessage, re
 								"commit-message": "${commitMessage}",
 								"repo-branch": "${branch}"
 						}'`)
- 				} else {
+				} else {
 					await axios.post(
 						'https://prod-13.westeurope.logic.azure.com/workflows/15ffb8208ba64e39910e5e363b6971b7/triggers/manual/paths/invoke/track',
 						{
@@ -112,17 +96,18 @@ const addSpentTime = async (commitId, author, commitTimestamp, commitMessage, re
 
 function activate(context) {
 	let disposable = vscode.commands.registerCommand('spentTime.openBox', async () => {
-		const repoBranch = await execShell(`cd ${projectPath} & git branch --show-current`)
-		const output = await execShell(`cd ${projectPath} && git log -1 --pretty=format:"%H,%an,%cd,%s"`)
-		let [commitId, author, commitTimestamp, commitMessage] = output.split(',')
-		let repoUrl = await execShell(`cd ${projectPath} && git config --get remote.origin.url`)
+		const repoBranch = await exec(`cd ${projectPath} & git branch --show-current`)
+		const { stdout } = await exec(`cd ${projectPath} && git log -1 --pretty=format:"%H,%an,%cd,%s"`)
+		let [commitId, author, commitTimestamp, commitMessage] = stdout.split(',')
+		let repoUrl = await exec(`cd ${projectPath} && git config --get remote.origin.url`)
 		// Check and remove username from repoUrl
 		const regex = /https:\/\/[^@]+@/
-		if (regex.test(repoUrl)) {
-			repoUrl = repoUrl.replace(/https:\/\/[^@]+@/, 'https://')
+		let url = ''
+		if (regex.test(repoUrl.stdout)) {
+			url = repoUrl.stdout.replace(/https:\/\/[^@]+@/, 'https://')
 		}
 
-		addSpentTime(commitId, author, commitTimestamp, commitMessage, repoBranch, repoUrl.trim())
+		await addSpentTime(commitId, author, commitTimestamp, commitMessage, repoBranch, url.trim())
 	})
 	context.subscriptions.push(disposable)
 }
@@ -131,5 +116,5 @@ function deactivate() {}
 
 module.exports = {
 	activate,
-	deactivate
+	deactivate,
 }

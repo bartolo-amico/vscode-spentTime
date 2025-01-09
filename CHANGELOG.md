@@ -4,6 +4,10 @@ All notable changes to the "worktime" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.0.5]
+
+- Add check fix url problem on windows OS
+
 ## [1.0.4]
 
 - Add check for hours input

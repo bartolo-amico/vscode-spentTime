@@ -3,7 +3,7 @@
   "displayName": "SpentTime",
   "description": "Ask to a developer to insert the work time task, and register in on cloud",
   "icon": "spent.png",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "publisher": "Bartolomeo Amico",
   "license": "MIT",
   "engines": {

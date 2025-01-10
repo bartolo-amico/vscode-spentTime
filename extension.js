@@ -9,8 +9,9 @@ let task, value, timeSpent
 
 let projectPath = vscode.workspace.workspaceFolders[0].uri.path
 if (OS === 'win32') {
-	projectPath = projectPath.replace(/\\/g, '\\\\')
+	projectPath = projectPath.replace(/\//g, '\\').substring(1)
 }
+
 const addJiraTask = async () => {
 	task = await vscode.window.showInputBox({ prompt: 'Enter the jira task you have completed' })
 }
@@ -96,10 +97,11 @@ const addSpentTime = async (commitId, author, commitTimestamp, commitMessage, re
 
 function activate(context) {
 	let disposable = vscode.commands.registerCommand('spentTime.openBox', async () => {
-		const repoBranch = await exec(`cd ${projectPath} & git branch --show-current`)
-		const { stdout } = await exec(`cd ${projectPath} && git log -1 --pretty=format:"%H,%an,%cd,%s"`)
+		const shell = os.platform() === 'win32' ? 'cmd.exe' : '/bin/bash'
+		const repoBranch = await exec(`cd ${projectPath} && git branch --show-current`, { shell })
+		const { stdout } = await exec(`cd ${projectPath} && git log -1 --pretty=format:"%H,%an,%cd,%s"`, { shell })
 		let [commitId, author, commitTimestamp, commitMessage] = stdout.split(',')
-		let repoUrl = await exec(`cd ${projectPath} && git config --get remote.origin.url`)
+		let repoUrl = await exec(`cd ${projectPath} && git config --get remote.origin.url`, { shell })
 		// Check and remove username from repoUrl
 		const regex = /https:\/\/[^@]+@/
 		let url = ''
@@ -107,7 +109,7 @@ function activate(context) {
 			url = repoUrl.stdout.replace(/https:\/\/[^@]+@/, 'https://')
 		}
 
-		await addSpentTime(commitId, author, commitTimestamp, commitMessage, repoBranch, url.trim())
+		await addSpentTime(commitId, author, commitTimestamp, commitMessage, repoBranch.stdout, url.trim())
 	})
 	context.subscriptions.push(disposable)
 }

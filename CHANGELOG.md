@@ -4,6 +4,14 @@ All notable changes to the "worktime" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.0.7]
+
+- Solve a bug that not permit the user to add the time when is inserted the first time
+
+## [1.0.6]
+
+- Solve a problem that affect windows OS user, when the plugin try to retrieve the project path
+
 ## [1.0.5]
 
 - Add check fix url problem on windows OS

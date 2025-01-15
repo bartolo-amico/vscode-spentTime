@@ -86,6 +86,7 @@ const addSpentTime = async (commitId, author, commitTimestamp, commitMessage, re
 					)
 				}
 				vscode.window.showInformationMessage('Time spent successfully logged!')
+				timeSpent = undefined
 			} catch (error) {
 				console.log(error)
 				vscode.window.showErrorMessage(error)

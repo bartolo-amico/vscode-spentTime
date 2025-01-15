@@ -4,6 +4,10 @@ All notable changes to the "worktime" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.0.8]
+
+- Solve a bug that affect the store of the data on the track file
+
 ## [1.0.7]
 
 - Solve a bug that not permit the user to add the time when is inserted the first time

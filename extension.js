@@ -100,7 +100,10 @@ function activate(context) {
 	let disposable = vscode.commands.registerCommand('spentTime.openBox', async () => {
 		const shell = os.platform() === 'win32' ? 'cmd.exe' : '/bin/bash'
 		const repoBranch = await exec(`cd ${projectPath} && git branch --show-current`, { shell })
-		const { stdout } = await exec(`cd ${projectPath} && git log -1 --pretty=format:"%H,%an,%cd,%s"`, { shell })
+		const { stdout } = await exec(
+			`cd ${projectPath} && git log -1 --pretty=format:"%H,%an,%cd,%s" --date=format-local:'%a %b %d %H:%M:%S %Z %Y'`,
+			{ shell }
+		)
 		let [commitId, author, commitTimestamp, commitMessage] = stdout.split(',')
 		let repoUrl = await exec(`cd ${projectPath} && git config --get remote.origin.url`, { shell })
 		// Check and remove username from repoUrl
@@ -108,6 +111,8 @@ function activate(context) {
 		let url = ''
 		if (regex.test(repoUrl.stdout)) {
 			url = repoUrl.stdout.replace(/https:\/\/[^@]+@/, 'https://')
+		} else {
+			url = repoUrl.stdout
 		}
 
 		await addSpentTime(commitId, author, commitTimestamp, commitMessage, repoBranch.stdout, url.trim())

@@ -101,7 +101,7 @@ function activate(context) {
 		const shell = os.platform() === 'win32' ? 'cmd.exe' : '/bin/bash'
 		const repoBranch = await exec(`cd ${projectPath} && git branch --show-current`, { shell })
 		const { stdout } = await exec(
-			`cd ${projectPath} && git log -1 --pretty=format:"%H,%an,%cd,%s" --date=format-local:'%a %b %d %H:%M:%S %Z %Y'`,
+			`cd ${projectPath} && git log -1 --pretty=format:"%H,%an,%cd,%s" --date=format-local:'%a %b %d %H:%M:%S CET %Y'`,
 			{ shell }
 		)
 		let [commitId, author, commitTimestamp, commitMessage] = stdout.split(',')

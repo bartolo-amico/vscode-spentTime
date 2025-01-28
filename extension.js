@@ -4,6 +4,7 @@ const exec = util.promisify(require('child_process').exec)
 const os = require('os')
 const axios = require('axios')
 const OS = os.platform()
+const moment = require('moment-timezone')
 
 let task, value, timeSpent
 
@@ -100,11 +101,13 @@ function activate(context) {
 	let disposable = vscode.commands.registerCommand('spentTime.openBox', async () => {
 		const shell = os.platform() === 'win32' ? 'cmd.exe' : '/bin/bash'
 		const repoBranch = await exec(`cd ${projectPath} && git branch --show-current`, { shell })
-		const { stdout } = await exec(
-			`cd ${projectPath} && git log -1 --pretty=format:"%H,%an,%cd,%s" --date=format-local:'%a %b %d %H:%M:%S CET %Y'`,
-			{ shell }
-		)
+		const { stdout } = await exec(`cd ${projectPath} && git log -1 --pretty=format:"%H,%an,%cd,%s"`, { shell })
 		let [commitId, author, commitTimestamp, commitMessage] = stdout.split(',')
+		// Remove part after the character + if it exists
+		commitTimestamp = commitTimestamp.replace(/\+.*/, '')
+		let formattedDate = moment(commitTimestamp.trim(), 'ddd MMM DD HH:mm:ss Z YYYY')
+			.tz('CET')
+			.format('ddd MMM DD HH:mm:ss [CET] YYYY')
 		let repoUrl = await exec(`cd ${projectPath} && git config --get remote.origin.url`, { shell })
 		// Check and remove username from repoUrl
 		const regex = /https:\/\/[^@]+@/
@@ -115,7 +118,7 @@ function activate(context) {
 			url = repoUrl.stdout
 		}
 
-		await addSpentTime(commitId, author, commitTimestamp, commitMessage, repoBranch.stdout, url.trim())
+		await addSpentTime(commitId, author, formattedDate, commitMessage, repoBranch.stdout, url.trim())
 	})
 	context.subscriptions.push(disposable)
 }

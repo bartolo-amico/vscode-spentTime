@@ -4,49 +4,53 @@ All notable changes to the "worktime" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.0.11]
+
+- Added new rating field, to get a rating from the user, on how good the use of copilot was
+
 ## [1.0.10]
 
-- Add moment library to solve problem that affect date parsing for windows user
+- Added moment library to solve problem that affect date parsing for windows user
 
 ## [1.0.9]
 
-- Solve a bug that affect the store of the data on for windows user
+- Solved a bug that affect the store of the data on for windows user
 
 ## [1.0.8]
 
-- Solve a bug that affect the store of the data on the track file
+- Solved a bug that affect the store of the data on the track file
 
 ## [1.0.7]
 
-- Solve a bug that not permit the user to add the time when is inserted the first time
+- Solved a bug that not permit the user to add the time when is inserted the first time
 
 ## [1.0.6]
 
-- Solve a problem that affect windows OS user, when the plugin try to retrieve the project path
+- Solved a problem that affect windows OS user, when the plugin try to retrieve the project path
 
 ## [1.0.5]
 
-- Add check fix url problem on windows OS
+- Added check fix url problem on windows OS
 
 ## [1.0.4]
 
-- Add check for hours input
-- Add trim on repo url
+- Added check for hours input
+- Added trim on repo url
 
 ## [1.0.3]
 
-- Add method to sanitize repourl
+- Added method to sanitize repourl
 
 ## [1.0.2]
 
-- Add axios to handle curl on window system
+- Added axios to handle curl on window system
 
 ## [1.0.1]
 
-- Change shortcut keybinding
-- Add possibility to close the prompt on escape key press
-- Change method to retrieve branch name
-- Add rollup to minify extension
+- Changed shortcut keybinding
+- Added possibility to close the prompt on escape key press
+- Changed method to retrieve branch name
+- Added rollup to minify extension
 
 ## [1.0.0]
 

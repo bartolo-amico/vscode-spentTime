@@ -17,3 +17,6 @@ rollup.config.js
 commitlint.config.js
 .prettierignore
 .shacommit
+*.html
+immagine.png
+extension.js

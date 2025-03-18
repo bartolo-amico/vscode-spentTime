@@ -6,7 +6,10 @@ const axios = require('axios')
 const OS = os.platform()
 const moment = require('moment-timezone')
 
-let task, value, timeSpent
+let rating = 0,
+	task,
+	value,
+	timeSpent
 
 let projectPath = vscode.workspace.workspaceFolders[0].uri.path
 if (OS === 'win32') {
@@ -28,6 +31,28 @@ const addTime = async () => {
 	timeSpent = parseInt(value, 10)
 }
 
+const rateWork = async () => {
+	const options = [
+		{ label: '⭐', value: 1 },
+		{ label: '⭐⭐', value: 2 },
+		{ label: '⭐⭐⭐', value: 3 },
+		{ label: '⭐⭐⭐⭐', value: 4 },
+		{ label: '⭐⭐⭐⭐⭐', value: 5 },
+	]
+	const selected = await vscode.window.showQuickPick(
+		options.map(option => option.label),
+		{
+			placeHolder: 'Rate your work from 1 to 5 stars',
+		}
+	)
+
+	if (selected) {
+		// Trova il valore numerico corrispondente all'opzione selezionata
+		rating = options.find(option => option.label === selected).value
+		vscode.window.showInformationMessage(`You rated your work: ${rating} stars`)
+	}
+}
+
 const addSpentTime = async (commitId, author, commitTimestamp, commitMessage, repoBranch, repoUrl) => {
 	const branch = repoBranch.trim()
 	await addTime()
@@ -46,6 +71,7 @@ const addSpentTime = async (commitId, author, commitTimestamp, commitMessage, re
 			}
 			addSpentTime(commitId, author, commitTimestamp, commitMessage, repoBranch, repoUrl)
 		} else {
+			await rateWork()
 			try {
 				if (OS !== `win32`) {
 					await exec(`curl --location 'https://prod-13.westeurope.logic.azure.com/workflows/15ffb8208ba64e39910e5e363b6971b7/triggers/manual/paths/invoke/track?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=YW2B2i2RRO3tAt3VARU6kFOoNCi8uj0bnIFaZzMOU0o' \
@@ -58,7 +84,8 @@ const addSpentTime = async (commitId, author, commitTimestamp, commitMessage, re
 								"repository-url": "${repoUrl}",
 								"spent-hours": "${timeSpent}",
 								"commit-message": "${commitMessage}",
-								"repo-branch": "${branch}"
+								"repo-branch": "${branch}",
+								"ai-tools-rating": "${rating}"
 						}'`)
 				} else {
 					await axios.post(
@@ -72,6 +99,7 @@ const addSpentTime = async (commitId, author, commitTimestamp, commitMessage, re
 							'spent-hours': `${timeSpent}`,
 							'commit-message': `${commitMessage}`,
 							'repo-branch': `${branch}`,
+							'ai-tools-rating': '${rating}',
 						},
 						{
 							params: {

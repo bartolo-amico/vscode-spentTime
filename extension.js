@@ -9,11 +9,21 @@ const moment = require('moment-timezone')
 let rating = 0,
 	task,
 	value,
-	timeSpent
+	timeSpent,
+	version
 
 let projectPath = vscode.workspace.workspaceFolders[0].uri.path
 if (OS === 'win32') {
 	projectPath = projectPath.replace(/\//g, '\\').substring(1)
+}
+
+function getExtensionVersion(extensionId) {
+	const ext = vscode.extensions.getExtension(extensionId)
+	if (ext) {
+		return ext.packageJSON.version
+	} else {
+		return 'Estensione non trovata'
+	}
 }
 
 const addJiraTask = async () => {
@@ -73,6 +83,7 @@ const addSpentTime = async (commitId, author, commitTimestamp, commitMessage, re
 		} else {
 			await rateWork()
 			try {
+				version = getExtensionVersion('bartolomeo amico.spenttime')
 				if (OS !== `win32`) {
 					await exec(`curl --location 'https://prod-13.westeurope.logic.azure.com/workflows/15ffb8208ba64e39910e5e363b6971b7/triggers/manual/paths/invoke/track?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=YW2B2i2RRO3tAt3VARU6kFOoNCi8uj0bnIFaZzMOU0o' \
 						--header 'Content-Type: application/json' \
@@ -85,7 +96,12 @@ const addSpentTime = async (commitId, author, commitTimestamp, commitMessage, re
 								"spent-hours": "${timeSpent}",
 								"commit-message": "${commitMessage}",
 								"repo-branch": "${branch}",
-								"ai-tools-rating": "${rating}"
+								"ai-tools-rating": "${rating}",
+								"metadata": {
+            			"tracking-method": "ide-plugin",
+            			"plugin-name": "spenttime",
+            			"plugin-version": "${version}"
+        				}
 						}'`)
 				} else {
 					await axios.post(
@@ -100,6 +116,11 @@ const addSpentTime = async (commitId, author, commitTimestamp, commitMessage, re
 							'commit-message': `${commitMessage}`,
 							'repo-branch': `${branch}`,
 							'ai-tools-rating': '${rating}',
+							metadata: {
+								'tracking-method': 'ide-plugin',
+								'plugin-name': 'spenttime',
+								'plugin-version': `${version}`,
+							},
 						},
 						{
 							params: {

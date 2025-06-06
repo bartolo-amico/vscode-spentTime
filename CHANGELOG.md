@@ -4,6 +4,10 @@ All notable changes to the "worktime" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.0.12]
+
+- Added new metadata on the api call
+
 ## [1.0.11]
 
 - Added new rating field, to get a rating from the user, on how good the use of copilot was

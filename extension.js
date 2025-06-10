@@ -115,7 +115,7 @@ const addSpentTime = async (commitId, author, commitTimestamp, commitMessage, re
 							'spent-hours': `${timeSpent}`,
 							'commit-message': `${commitMessage}`,
 							'repo-branch': `${branch}`,
-							'ai-tools-rating': '${rating}',
+							'ai-tools-rating': `${rating}`,
 							metadata: {
 								'tracking-method': 'ide-plugin',
 								'plugin-name': 'spenttime',

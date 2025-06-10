@@ -4,6 +4,10 @@ All notable changes to the "worktime" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.0.13]
+
+- Added fix for wrong rating value
+
 ## [1.0.12]
 
 - Added new metadata on the api call

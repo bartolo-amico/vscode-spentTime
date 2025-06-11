@@ -4,6 +4,13 @@ All notable changes to the "worktime" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [2.0.0-alpha]
+
+### News
+
+🥁🥁🥁 We made a big refactor on our plugin. Now the plugin is give you a better user interface, to be more confortable
+to track your work
+
 ## [1.0.13]
 
 - Added fix for wrong rating value

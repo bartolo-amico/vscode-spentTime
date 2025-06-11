@@ -9,6 +9,7 @@ const resolve = require('@rollup/plugin-node-resolve')
 const babel = require('@rollup/plugin-babel')
 const commonjs = require('@rollup/plugin-commonjs')
 const peerDepsExternal = require('rollup-plugin-peer-deps-external')
+const copy = require('rollup-plugin-copy')
 
 module.exports = {
 	input: `./extension.js`,
@@ -43,6 +44,14 @@ module.exports = {
 			exclude: 'node_modules/**', // only transpile our source code
 			presets: ['@babel/preset-env'],
 			extensions: ['.js'],
+		}),
+		copy({
+			targets: [
+				{ src: 'webview-template.ejs', dest: 'dist' },
+				{ src: 'webview-style.css', dest: 'dist' },
+				{ src: 'webview-script.js', dest: 'dist' },
+				{ src: 'header.png', dest: 'dist' },
+			],
 		}),
 	],
 }

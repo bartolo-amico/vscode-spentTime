@@ -1,10 +1,10 @@
 {
   "name": "spenttime",
-  "displayName": "SpentTime",
-  "description": "Ask to a developer to insert the work time task, and register it on cloud",
+  "displayName": "Spent Time",
+  "description": "Spent Time is a Visual Studio Code extension that allows you to track the time spent on tasks directly from your editor. It integrates with Git to provide a seamless experience for developers.",
   "icon": "spent.png",
-  "version": "2.0.0-alpha",
-  "publisher": "Bartolomeo Amico",
+  "version": "2.0.1-alpha.0",
+  "publisher": "bartolomeo-amico",
   "license": "MIT",
   "engines": {
     "vscode": "^1.89.0"
@@ -14,7 +14,7 @@
     "theme": "dark"
   },
   "author": {
-    "name": "Bartolomeo Amico",
+    "name": "bartolomeo-amico",
     "email": "b.amico@nexidigital.eu",
     "url": "https://github.com/bartolo-amico"
   },
@@ -39,11 +39,11 @@
   ],
   "contributors": [
     {
-      "name": "Bartolomeo Amico",
+      "name": "bartolomeo-amico",
       "email": "b.amico@nexidigital.eu"
     }
   ],
-  "main": "./dist/index.js",
+  "main": "./extension.js",
   "activationEvents": [
     "*"
   ],

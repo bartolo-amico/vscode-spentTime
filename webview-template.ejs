@@ -17,8 +17,10 @@
           <div class="row mb-3 align-items-center">
             <label for="project" class="col-sm-5 col-form-label">You are working on project:</label>
             <div class="col-sm-7">
-              <select class="form-select" id="project" disabled>
-                <option selected><%= projectName %></option>
+              <select class="form-select" id="project" <%= projects.length === 1 ? 'disabled' : '' %>>
+                <% projects.forEach(function(proj) { %>
+                  <option value="<%= proj.path %>"><%= proj.name %></option>
+                <% }) %>
               </select>
             </div>
           </div>
@@ -31,7 +33,7 @@
           <div class="row mb-3">
             <label class="col-sm-5 col-form-label">Commit message:</label>
             <div class="col-sm-7">
-              <p class="static-info"><%= commitMessage %></p>
+              <p class="static-info" id="commit-message"><%= commitMessage %></p>
             </div>
           </div>
           <div class="row mb-4">
@@ -54,6 +56,7 @@
               <input type="hidden" id="commit-id" value="<%= commitId %>">
               <input type="hidden" id="commit-timestamp" value="<%= formattedDate %>">
               <input type="hidden" id="repo-url" value="<%= url %>">
+              <input type="hidden" id="repo-branch" value="<%= repoBranch %>">
             </div>
           </div>
           <div class="row mb-3 align-items-center">

@@ -9,8 +9,8 @@ const path = require('path')
 const fs = require('fs')
 const ejs = require('ejs')
 
-let projectPath = vscode.workspace.workspaceFolders[0].uri.path
 let version
+
 function getExtensionVersion(extensionId) {
 	const ext = vscode.extensions.getExtension(extensionId)
 	if (ext) {
@@ -18,10 +18,6 @@ function getExtensionVersion(extensionId) {
 	} else {
 		return 'Estensione non trovata'
 	}
-}
-
-if (OS === 'win32') {
-	projectPath = projectPath.replace(/\//g, '\\').substring(1)
 }
 
 const addSpentTime = async (
@@ -37,7 +33,7 @@ const addSpentTime = async (
 ) => {
 	const branch = repoBranch.trim()
 	try {
-		version = getExtensionVersion('bartolomeo amico.spenttime')
+		version = getExtensionVersion('bartolomeo-amico.spenttime')
 		if (OS !== `win32`) {
 			await exec(`curl --location 'https://prod-13.westeurope.logic.azure.com/workflows/15ffb8208ba64e39910e5e363b6971b7/triggers/manual/paths/invoke/track?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=YW2B2i2RRO3tAt3VARU6kFOoNCi8uj0bnIFaZzMOU0o' \
 						--header 'Content-Type: application/json' \
@@ -73,7 +69,7 @@ const addSpentTime = async (
 					metadata: {
 						'tracking-method': 'ide-plugin',
 						'plugin-name': 'spenttime',
-						'plugin-version': '${version}',
+						'plugin-version': `${version}`,
 					},
 				},
 				{
@@ -97,45 +93,77 @@ const addSpentTime = async (
 	return true
 }
 
-const openWebview = (context, author, commitMessage, repoBranch, projectName, commitId, formattedDate, url) => {
-	const panel = vscode.window.createWebviewPanel(
-		'formWebview', // Identifies the type of the webview. Used internally
-		'Spent Time Box', // Title of the panel displayed to the user
-		vscode.ViewColumn.One, // Editor column to show the new webview panel in.
-		{
-			enableScripts: true, // Enable scripts in the webview
-		}
-	)
+const openWebview = (context, author, commitMessage, repoBranch, commitId, formattedDate, url, projects) => {
+	const panel = vscode.window.createWebviewPanel('formWebview', 'Spent Time Box', vscode.ViewColumn.One, {
+		enableScripts: true,
+	})
 
 	panel.webview.html = getWebviewContent(
 		author,
 		commitMessage,
 		repoBranch,
-		projectName,
 		panel,
 		commitId,
 		formattedDate,
-		url
+		url,
+		projects
 	)
 
 	panel.webview.onDidReceiveMessage(
-		message => {
-			const { hours, workItem, commitId, commitTimestamp, repoUrl, rating } = message.data
+		async message => {
+			const { hours, workItem, commitId, commitTimestamp, repoUrl, rating, projectPath, commitMessage, repoBranch } =
+				message.data || {}
 			switch (message.command) {
 				case 'cancel':
-					vscode.window.showInformationMessage('Form submission cancelled.')
+					vscode.window.showInformationMessage('Tracking cancelled.')
 					panel.dispose()
 					return
 				case 'validate':
 					if (isNaN(hours) || hours <= 0) {
 						vscode.window.showErrorMessage('Invalid input. Please enter a positive number.')
-					} else if (/\w+-\d+/g.test(workItem) === false) {
-						vscode.window.showErrorMessage('Invalid input. Please enter a valid task. ie (JIRA-000)')
+					} else if (!/^\w+-\d+$/.test(workItem) || workItem.length > 15) {
+						vscode.window.showErrorMessage(
+							'Invalid input. Please enter a valid task that does not exceed 15 characters. ie (JIRA-000...)'
+						)
 					} else {
 						addSpentTime(commitId, author, commitTimestamp, workItem, hours, commitMessage, repoBranch, repoUrl, rating)
-						//vscode.window.showInformationMessage(`Form submitted with data: ${JSON.stringify(message.data)}`)
 						panel.dispose()
 					}
+					break
+				case 'projectChanged':
+					if (projectPath) {
+						const shell = os.platform() === 'win32' ? 'cmd.exe' : '/bin/bash'
+						try {
+							const repoBranch = await exec(`cd "${projectPath}" && git branch --show-current`, { shell })
+							const { stdout } = await exec(`cd "${projectPath}" && git log -1 --pretty=format:"%H,%an,%cd,%s"`, {
+								shell,
+							})
+							let [commitId, author, commitTimestamp, commitMessage] = stdout.split(',')
+							commitTimestamp = commitTimestamp.replace(/\+.*/, '')
+							let formattedDate = moment(commitTimestamp.trim(), 'ddd MMM DD HH:mm:ss Z YYYY')
+								.tz('CET')
+								.format('ddd MMM DD HH:mm:ss [CET] YYYY')
+							let repoUrl = await exec(`cd "${projectPath}" && git config --get remote.origin.url`, { shell })
+							const regex = /https:\/\/[^@]+@/
+							let url = ''
+							if (regex.test(repoUrl.stdout)) {
+								url = repoUrl.stdout.replace(/https:\/\/[^@]+@/, 'https://')
+							} else {
+								url = repoUrl.stdout
+							}
+							panel.webview.postMessage({
+								command: 'updateProjectInfo',
+								repoBranch: repoBranch.stdout,
+								commitMessage,
+								commitId,
+								formattedDate,
+								url: url.trim(),
+							})
+						} catch (err) {
+							vscode.window.showErrorMessage('Failed to get project info: ' + err)
+						}
+					}
+					break
 			}
 		},
 		undefined,
@@ -143,7 +171,7 @@ const openWebview = (context, author, commitMessage, repoBranch, projectName, co
 	)
 }
 
-const getWebviewContent = (author, commitMessage, repoBranch, projectName, panel, commitId, formattedDate, url) => {
+const getWebviewContent = (author, commitMessage, repoBranch, panel, commitId, formattedDate, url, projects) => {
 	const scriptUri = panel.webview.asWebviewUri(vscode.Uri.file(path.join(__dirname, 'webview-script.js')))
 	const styleUri = panel.webview.asWebviewUri(vscode.Uri.file(path.join(__dirname, 'webview-style.css')))
 	const templatePath = path.join(__dirname, 'webview-template.ejs')
@@ -152,28 +180,39 @@ const getWebviewContent = (author, commitMessage, repoBranch, projectName, panel
 		author,
 		commitMessage,
 		repoBranch,
-		projectName,
 		commitId,
 		formattedDate,
 		url,
 		scriptUri,
 		styleUri,
+		projects,
 	})
 }
 
 function activate(context) {
 	let disposable = vscode.commands.registerCommand('spentTime.openBox', async () => {
+		// Get all workspace folders
+		const workspaceFolders = vscode.workspace.workspaceFolders || [
+			{ name: 'bartolo-amico', uri: { fsPath: '/home/bamico/DevLabs/Reply/NexiDigital/bartolo-amico/' } },
+			{ name: 'vscode-spentTime', uri: { fsPath: '/home/bamico/DevLabs/Reply/NexiDigital/vscode-spentTime/' } },
+		]
+		if (!workspaceFolders || workspaceFolders.length === 0) {
+			vscode.window.showErrorMessage('No git project found. Please be sure to be in a git project folder first.')
+			return
+		}
+		const projects = workspaceFolders.map(f => ({
+			name: f.name,
+			path: OS === 'win32' ? f.uri.fsPath.replace(/\//g, '\\').substring(1) : f.uri.fsPath,
+		}))
 		const shell = os.platform() === 'win32' ? 'cmd.exe' : '/bin/bash'
-		const repoBranch = await exec(`cd ${projectPath} && git branch --show-current`, { shell })
-		const { stdout } = await exec(`cd ${projectPath} && git log -1 --pretty=format:"%H,%an,%cd,%s"`, { shell })
+		const repoBranch = await exec(`cd ${projects[0].path} && git branch --show-current`, { shell })
+		const { stdout } = await exec(`cd ${projects[0].path} && git log -1 --pretty=format:"%H,%an,%cd,%s"`, { shell })
 		let [commitId, author, commitTimestamp, commitMessage] = stdout.split(',')
-		// Remove part after the character + if it exists
 		commitTimestamp = commitTimestamp.replace(/\+.*/, '')
 		let formattedDate = moment(commitTimestamp.trim(), 'ddd MMM DD HH:mm:ss Z YYYY')
 			.tz('CET')
 			.format('ddd MMM DD HH:mm:ss [CET] YYYY')
-		let repoUrl = await exec(`cd ${projectPath} && git config --get remote.origin.url`, { shell })
-		// Check and remove username from repoUrl
+		let repoUrl = await exec(`cd ${projects[0].path} && git config --get remote.origin.url`, { shell })
 		const regex = /https:\/\/[^@]+@/
 		let url = ''
 		if (regex.test(repoUrl.stdout)) {
@@ -181,8 +220,8 @@ function activate(context) {
 		} else {
 			url = repoUrl.stdout
 		}
-		const projectName = repoUrl.stdout.split('/').slice(-1)[0].replace('.git', '')
-		openWebview(context, author, commitMessage, repoBranch.stdout, projectName, commitId, formattedDate, url.trim())
+
+		openWebview(context, author, commitMessage, repoBranch.stdout, commitId, formattedDate, url.trim(), projects)
 	})
 	context.subscriptions.push(disposable)
 }

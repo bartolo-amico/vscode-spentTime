@@ -18,3 +18,7 @@ commitlint.config.js
 .shacommit
 *.html
 extension.js
+webview-*.js
+webview-*.css
+webview-*.ejs
+header.png

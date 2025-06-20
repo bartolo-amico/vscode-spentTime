@@ -4,6 +4,11 @@ All notable changes to the "worktime" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [2.0.1-alpha.0]
+
+- Added workspace selection
+- Added check for git project
+
 ## [2.0.0-alpha]
 
 ### News

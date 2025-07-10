@@ -3,7 +3,7 @@
   "displayName": "Spent Time",
   "description": "Spent Time is a Visual Studio Code extension that allows you to track the time spent on tasks directly from your editor. It integrates with Git to provide a seamless experience for developers.",
   "icon": "spent.png",
-  "version": "2.0.1-alpha.0",
+  "version": "2.0.1-alpha.1",
   "publisher": "bartolomeo-amico",
   "license": "MIT",
   "engines": {
@@ -43,7 +43,7 @@
       "email": "b.amico@nexidigital.eu"
     }
   ],
-  "main": "./extension.js",
+  "main": "./dist/index.js",
   "activationEvents": [
     "*"
   ],

@@ -10,6 +10,7 @@ const fs = require('fs')
 const ejs = require('ejs')
 
 let version
+const shell = os.platform() === 'win32' ? 'cmd.exe' : '/bin/bash'
 
 function getExtensionVersion(extensionId) {
 	const ext = vscode.extensions.getExtension(extensionId)
@@ -43,7 +44,7 @@ const addSpentTime = async (
 								"commit-timestamp": "${commitTimestamp}",
 								"work-item-id": "${task}",
 								"repository-url": "${repoUrl}",
-								"spent-hours": "${timeSpent}",
+								"spent-hours": "${Number(timeSpent)}",
 								"commit-message": "${commitMessage}",
 								"repo-branch": "${branch}",
 								"ai-tools-rating": "${rating}",
@@ -62,7 +63,7 @@ const addSpentTime = async (
 					'commit-timestamp': `${commitTimestamp}`,
 					'work-item-id': `${task}`,
 					'repository-url': `${repoUrl}`,
-					'spent-hours': `${timeSpent}`,
+					'spent-hours': `${Number(timeSpent)}`,
 					'commit-message': `${commitMessage}`,
 					'repo-branch': `${branch}`,
 					'ai-tools-rating': `${rating}`,
@@ -86,7 +87,6 @@ const addSpentTime = async (
 			)
 		}
 		vscode.window.showInformationMessage('Time spent successfully logged!')
-		timeSpent = undefined
 	} catch (error) {
 		vscode.window.showErrorMessage(error)
 	}
@@ -132,7 +132,6 @@ const openWebview = (context, author, commitMessage, repoBranch, commitId, forma
 					break
 				case 'projectChanged':
 					if (projectPath) {
-						const shell = os.platform() === 'win32' ? 'cmd.exe' : '/bin/bash'
 						try {
 							const repoBranch = await exec(`cd "${projectPath}" && git branch --show-current`, { shell })
 							const { stdout } = await exec(`cd "${projectPath}" && git log -1 --pretty=format:"%H,%an,%cd,%s"`, {
@@ -192,10 +191,7 @@ const getWebviewContent = (author, commitMessage, repoBranch, panel, commitId, f
 function activate(context) {
 	let disposable = vscode.commands.registerCommand('spentTime.openBox', async () => {
 		// Get all workspace folders
-		const workspaceFolders = vscode.workspace.workspaceFolders || [
-			{ name: 'bartolo-amico', uri: { fsPath: '/home/bamico/DevLabs/Reply/NexiDigital/bartolo-amico/' } },
-			{ name: 'vscode-spentTime', uri: { fsPath: '/home/bamico/DevLabs/Reply/NexiDigital/vscode-spentTime/' } },
-		]
+		const workspaceFolders = vscode.workspace.workspaceFolders
 		if (!workspaceFolders || workspaceFolders.length === 0) {
 			vscode.window.showErrorMessage('No git project found. Please be sure to be in a git project folder first.')
 			return

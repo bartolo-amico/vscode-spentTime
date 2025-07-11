@@ -4,6 +4,10 @@ All notable changes to the "worktime" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [2.0.1-beta]
+
+- Fix error that affect windows user with project path
+
 ## [2.0.1-alpha.1]
 
 - Fix error that affect the hour spent inserted by a user

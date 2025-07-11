@@ -12,7 +12,7 @@ const peerDepsExternal = require('rollup-plugin-peer-deps-external')
 const copy = require('rollup-plugin-copy')
 
 module.exports = {
-	input: `./extension.js`,
+	input: `./index.js`,
 	watch: {
 		include: `**`,
 		clearScreen: false,

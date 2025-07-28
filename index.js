@@ -121,7 +121,7 @@ const openWebview = (context, author, commitMessage, repoBranch, commitId, forma
 				case 'validate':
 					if (isNaN(hours) || hours <= 0) {
 						vscode.window.showErrorMessage('Invalid input. Please enter a positive number.')
-					} else if (!/^\w+-\d+$/.test(workItem) || workItem.length > 15) {
+					} else if (!/^\w+-\d+.*/.test(workItem) || workItem.length > 30) {
 						vscode.window.showErrorMessage(
 							'Invalid input. Please enter a valid task that does not exceed 15 characters. ie (JIRA-000...)'
 						)

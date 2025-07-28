@@ -4,6 +4,10 @@ All notable changes to the "worktime" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [2.0.2]
+
+- Increase limit of task lenght to 30
+
 ## [2.0.1-beta]
 
 - Fix error that affect windows user with project path

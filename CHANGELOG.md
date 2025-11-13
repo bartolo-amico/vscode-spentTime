@@ -4,6 +4,23 @@ All notable changes to the "worktime" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [2.1.0]
+
+- Version validation switched to Azure endpoint with clear rules:
+  - Warn when a newer active version exists (with ~30-day grace period and download link).
+  - Block when current version expired and a higher active exists (shows download link).
+  - Allow when current is active and no higher active exists, or expired with no higher active.
+  - Connection errors surface an explicit message to check connectivity (tracking requires Azure).
+- Pre-checks before opening the webview: ensure repo is clean and last commit is authored by current Git user.
+- Duplicate protection: local cache warns if the current commit was already tracked and lets you cancel or proceed.
+- Tracking reliability: unified axios-based call with try/catch and clearer error messages (status, timeout, details).
+- Webview UX/accessibility:
+  - Star rating can be cleared (click selected star again or use new “Clear” action) and is keyboard/screen-reader friendly.
+  - Hours input now has min/step and helper text; work item has pattern/maxlength with inline hint.
+  - Shows short commit id; focuses work item; Enter key submits.
+  - Toned down full-screen overlay for a more native feel.
+- Refactor: modular src/ layout (services for version, git, tracking, state; UI for webview). Rollup now builds from `src/index.js` and copies UI assets from `src/ui`.
+
 ## [2.0.2]
 
 - Increase limit of task lenght to 30

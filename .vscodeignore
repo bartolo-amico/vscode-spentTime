@@ -15,7 +15,6 @@ rollup.config.js
 .github/**
 commitlint.config.js
 .prettierignore
-.shacommit
 *.html
 extension.js
 webview-*.js

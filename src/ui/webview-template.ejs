@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spent Time</title>
+    <!-- Using CDN for Bootstrap and Icons. Consider local bundling for offline/CSP safety. -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="<%= styleUri %>" rel="stylesheet">
+  <script src="<%= scriptUri %>"></script>
+  </head>
+  <body>
+    <div class="card work-tracker-card">
+      <div class="card-header nexi-header"></div>
+      <div class="card-body p-4">
+        <form id="form">
+          <div class="row mb-3 align-items-center">
+            <label for="project" class="col-sm-5 col-form-label">You are working on project:</label>
+            <div class="col-sm-7">
+              <select class="form-select" id="project" <%= projects.length === 1 ? 'disabled' : '' %>>
+                <% projects.forEach(function(proj) { %>
+                  <option value="<%= proj.path %>"><%= proj.name %></option>
+                <% }) %>
+              </select>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label class="col-sm-5 col-form-label">Branch:</label>
+            <div class="col-sm-7">
+              <p class="static-info"><%= repoBranch %></p>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label class="col-sm-5 col-form-label">Commit ID:</label>
+            <div class="col-sm-7">
+              <p class="static-info"><%= commitId ? commitId.substring(0,7) : '' %></p>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label class="col-sm-5 col-form-label">Commit message:</label>
+            <div class="col-sm-7">
+              <p class="static-info" id="commit-message"><%= commitMessage %></p>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <label class="col-sm-5 col-form-label">Commit author:</label>
+            <div class="col-sm-7">
+              <p class="static-info"><%= author %></p>
+            </div>
+          </div>
+          <hr class="my-4">
+          <div class="row mb-3 align-items-center">
+            <label for="hours" class="col-sm-7 col-form-label">How many HOURS did you spend on this task?</label>
+            <div class="col-sm-5">
+              <input type="number" class="form-control" id="hours" value="1" min="0.25" step="0.25" aria-describedby="hours-help">
+              <div id="hours-help" class="form-text">Use quarter-hour increments, e.g., 0.25, 0.5, 1.0.</div>
+            </div>
+          </div>
+          <div class="row mb-3 align-items-center">
+            <label for="work-item" class="col-sm-7 col-form-label">Provide the work item id (e.g. Jira ticket id)?</label>
+            <div class="col-sm-5">
+              <input type="text" class="form-control" id="work-item" placeholder="PRJ-1234" pattern="\\w+-\\d+.*" maxlength="30" aria-describedby="work-help">
+              <div id="work-help" class="form-text">Format: PRJ-1234 (letters/numbers-issueNumber)</div>
+              <input type="hidden" id="commit-id" value="<%= commitId %>">
+              <input type="hidden" id="commit-timestamp" value="<%= formattedDate %>">
+              <input type="hidden" id="repo-url" value="<%= url %>">
+              <input type="hidden" id="repo-branch" value="<%= repoBranch %>">
+            </div>
+          </div>
+          <div class="row mb-3 align-items-center">
+            <label class="col-sm-7 col-form-label">If used, how much AI tools supported you in this task?</label>
+            <div class="col-sm-5">
+              <div class="d-flex align-items-center gap-2">
+                <div class="star-rating" role="radiogroup" aria-label="AI assistance rating">
+                  <input type="radio" id="star5" name="rating" value="5" /><label for="star5" title="5 stars"><i class="bi bi-star-fill"></i><span class="visually-hidden">5 stars</span></label>
+                  <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="4 stars"><i class="bi bi-star-fill"></i><span class="visually-hidden">4 stars</span></label>
+                  <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="3 stars"><i class="bi bi-star-fill"></i><span class="visually-hidden">3 stars</span></label>
+                  <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="2 stars"><i class="bi bi-star-fill"></i><span class="visually-hidden">2 stars</span></label>
+                  <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="1 star"><i class="bi bi-star-fill"></i><span class="visually-hidden">1 star</span></label>
+                </div>
+                <button id="clear-rating" type="button" class="btn btn-link btn-sm p-0">Clear</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="card-footer bg-light text-end p-3">
+        <button type="button" onclick="submitForm('cancel')" class="btn btn-secondary">Cancel</button>
+        <button type="button" onclick="submitForm('validate')" class="btn btn-primary">OK</button>
+      </div>
+    </div>
+  </body>
+</html>

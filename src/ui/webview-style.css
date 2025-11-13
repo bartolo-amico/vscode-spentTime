@@ -1,0 +1,75 @@
+body {
+  margin: 0;
+  padding: 16px;
+  background: transparent;
+}
+
+.work-tracker-card {
+  max-width: 750px;
+  margin: 24px auto;
+  border-radius: .75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-header.nexi-header {
+  background-color: #1a237e;
+  /* Dark blue background */
+  background-image: url('./header.png');
+  /* Optional background image */
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 4rem;
+  border-top-left-radius: .75rem;
+  border-top-right-radius: .75rem;
+}
+
+.form-label {
+  font-weight: 500;
+}
+
+.static-info {
+  padding-top: calc(.375rem + 1px);
+  padding-bottom: calc(.375rem + 1px);
+  margin-bottom: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Star Rating */
+.star-rating {
+  display: inline-flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  gap: 2px;
+}
+
+.star-rating input[type="radio"] {
+  display: none;
+}
+
+.star-rating label {
+  font-size: 1.5rem;
+  color: #ccc;
+  cursor: pointer;
+  padding: 0 0.15rem;
+}
+
+.star-rating input[type="radio"]:checked~label,
+.star-rating label:hover,
+.star-rating label:hover~label {
+  color: #ffc107;
+  /* Bootstrap's warning color for yellow stars */
+}
+
+.visually-hidden {
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+}
+
+.form-text {
+  font-size: 0.8rem;
+  color: #888;
+}

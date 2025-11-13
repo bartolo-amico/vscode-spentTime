@@ -12,7 +12,9 @@ const peerDepsExternal = require('rollup-plugin-peer-deps-external')
 const copy = require('rollup-plugin-copy')
 
 module.exports = {
-	input: `./index.js`,
+	input: `./src/index.js`,
+	external: id =>
+		['vscode', 'moment', 'moment-timezone', 'axios', 'fs', 'path', 'os', 'util', 'child_process', 'ejs'].includes(id),
 	watch: {
 		include: `**`,
 		clearScreen: false,
@@ -38,7 +40,7 @@ module.exports = {
 			preferBuiltins: false,
 			extensions: ['.js', '.jsx'],
 		}),
-		commonjs({ include: /node_modules/ }),
+		commonjs({ include: [/node_modules/, 'src/**'] }),
 		babel({
 			babelHelpers: 'bundled',
 			exclude: 'node_modules/**', // only transpile our source code
@@ -47,10 +49,10 @@ module.exports = {
 		}),
 		copy({
 			targets: [
-				{ src: 'webview-template.ejs', dest: 'dist' },
-				{ src: 'webview-style.css', dest: 'dist' },
-				{ src: 'webview-script.js', dest: 'dist' },
-				{ src: 'header.png', dest: 'dist' },
+				{ src: 'src/ui/webview-template.ejs', dest: 'dist' },
+				{ src: 'src/ui/webview-style.css', dest: 'dist' },
+				{ src: 'src/ui/webview-script.js', dest: 'dist' },
+				{ src: 'src/ui/header.png', dest: 'dist' },
 			],
 		}),
 	],

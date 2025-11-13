@@ -20,8 +20,6 @@ COMMIT_SOURCE=$2
 SHA1=$3
 
 clear
-touch .shacommit
-git rev-parse HEAD > .shacommit
 
 if [ "${COMMIT_SOURCE}" = merge ];then
     exit 0
@@ -79,9 +77,9 @@ if ! $pass; then
   exit 1
 else
   echo -e "${GREEN}VALIDATION SUCCESS 🎉🎉🔥🔥\n"
-  if [ ${#eslintFiles} -gt 1 ]; then
-    prettier
-  fi
+  #if [ ${#eslintFiles} -gt 1 ]; then
+    #prettier
+  #fi
 fi
 
 exit $?

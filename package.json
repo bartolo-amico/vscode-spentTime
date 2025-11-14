@@ -35,7 +35,10 @@
     "time",
     "task",
     "nexi digital",
-    "javascript"
+    "javascript",
+    "vscode-extension",
+    "productivity",
+    "time-tracking"
   ],
   "contributors": [
     {
@@ -69,6 +72,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@vscode/vsce": "^3.7.0",
     "axios": "^1.7.9",
     "ejs": "^3.1.10",
     "moment": "^2.30.1",

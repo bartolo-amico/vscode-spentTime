@@ -76,18 +76,28 @@ function openWebview(context, author, commitMessage, repoBranch, commitId, forma
 					}
 
 					try {
-						await addSpentTime({
-							commitId,
-							author,
-							commitTimestamp,
-							task: workItem,
-							timeSpent: hours,
-							commitMessage,
-							repoBranch,
-							repoUrl,
-							rating,
-							pluginVersion: version,
-						})
+						await vscode.window.withProgress(
+							{
+								location: vscode.ProgressLocation.Notification,
+								title: 'Logging time to Azure…',
+							},
+							async progress => {
+								progress.report({ increment: 20 })
+								await addSpentTime({
+								commitId,
+								author,
+								commitTimestamp,
+								task: workItem,
+								timeSpent: hours,
+								commitMessage,
+								repoBranch,
+								repoUrl,
+								rating,
+								pluginVersion: version,
+								})
+								progress.report({ increment: 100 })
+							}
+						)
 						await markCommitTracked(context, repoUrl, commitId, {
 							workItem,
 							hours,
@@ -131,7 +141,18 @@ function registerOpenBox(context) {
 		const pluginName = 'spenttime'
 		const version = getExtensionVersion('bartolomeo-amico.spenttime')
 
-		const check = await validateVersion(pluginName, version)
+		const check = await vscode.window.withProgress(
+			{
+				location: vscode.ProgressLocation.Notification,
+				title: 'Checking SpentTime version…',
+			},
+			async progress => {
+				progress.report({ increment: 10 })
+				const res = await validateVersion(pluginName, version)
+				progress.report({ increment: 100 })
+				return res
+			}
+		)
 		if (check.decision === 'error') {
 			vscode.window.showErrorMessage(check.message)
 			return

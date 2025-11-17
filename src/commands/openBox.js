@@ -185,12 +185,7 @@ function registerOpenBox(context) {
 			}
 		}
 
-		const workspaceFolders = [
-			{
-				name: 'portalShell',
-				uri: { fsPath: '/home/bamico/DevLabs/Reply/Nets/DACH/isv-partnerportal-fe-merchant' },
-			},
-		] //vscode.workspace.workspaceFolders
+		const workspaceFolders = vscode.workspace.workspaceFolders
 		if (!workspaceFolders || workspaceFolders.length === 0) {
 			vscode.window.showErrorMessage('No git project found. Please be sure to be in a git project folder first.')
 			return
